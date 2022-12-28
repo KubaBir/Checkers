@@ -10,7 +10,8 @@ class Board {
     std::vector<std::unique_ptr<Piece>> pieces;
 
    public:
-    void draw();
+    Board(int dim);
+    void draw(sf::RenderWindow& window);
     void add_piece(std::unique_ptr<Piece> piece);
     std::vector<std::unique_ptr<Piece>>& get_pieces();
     bool attempt_promote();
