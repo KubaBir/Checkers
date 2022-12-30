@@ -40,10 +40,13 @@
         "sstream": "cpp",
         "stdexcept": "cpp",
         "streambuf": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "ctime": "cpp",
+        "map": "cpp",
+        "set": "cpp"
     },
     "code-runner.executorMap": {
-        "cpp": "cd $dir && g++ -Wall *.cpp -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+        "cpp": "cd $dir && g++ -Wall *.cpp -o $workspaceRoot/$fileNameWithoutExt -I$workspaceRoot/include -L$workspaceRoot/lib -lsfml-graphics -lsfml-window -lsfml-system && $workspaceRoot/$fileNameWithoutExt",
     },
     "code-runner.ignoreSelection": true,
 }
