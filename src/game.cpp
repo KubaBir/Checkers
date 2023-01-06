@@ -32,3 +32,24 @@ Board game::setup() {
 
     return board;
 }
+
+sf::Vector2i game::coords_to_pos(sf::Event event) {
+    sf::Vector2i coords(event.mouseButton.x, event.mouseButton.y);
+    int x = coords.x;
+    int y = coords.y;
+    // std::cout << x << y << std::endl;
+    return sf::Vector2i((x - MARGIN) / FIELD_SIZE, (y - MARGIN) / FIELD_SIZE);
+}
+
+bool game::attempt_move(Board& board, sf::Vector2i origin, sf::Vector2i destination) {
+    if (!board.is_occupied(destination) && board.is_occupied(origin)) {
+        for (const auto& piece : board.get_pieces()) {
+            if (piece->get_pos() == origin) {
+                std::cout << "Moving from " << origin.x << " " << origin.y << " to " << destination.x << " " << destination.y << std::endl;
+                piece->move(destination);
+            }
+        }
+    }
+
+    return true;
+}

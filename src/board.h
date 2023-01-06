@@ -1,7 +1,7 @@
 #ifndef BOARD
 #define BOARD
-#define WHITE_PROMOTE 8
-#define BLACK_PROMOTE 1
+#define WHITE_PROMOTE 0
+#define BLACK_PROMOTE 7
 
 #include "pieces.h"
 
@@ -15,6 +15,7 @@ class Board {
     void add_piece(std::unique_ptr<Piece> piece);
     std::vector<std::unique_ptr<Piece>>& get_pieces();
     bool attempt_promote();
+    bool is_occupied(sf::Vector2i field);
 };
 
 #endif
