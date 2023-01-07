@@ -35,8 +35,7 @@ int main(int argc, char* argv[]) {
         }
         // if (event.type == sf::Event::MouseButtonReleased && mousePressed) {
         // }
-        board.attempt_promote();
-
+        game::update(board);
         window.clear(sf::Color::Cyan);
 
         board.draw(window);

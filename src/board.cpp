@@ -3,9 +3,22 @@
 Board::Board(int dim) {
     this->height = dim;
     this->width = dim;
+    this->turn = WHITE;
 }
+
 void Board::add_piece(std::unique_ptr<Piece> piece) {
     this->pieces.push_back(std::move(piece));
+}
+
+void Board::switch_turn() {
+    if (this->turn == WHITE)
+        this->turn = BLACK;
+    else
+        this->turn = WHITE;
+}
+
+int Board::get_turn() {
+    return this->turn;
 }
 
 std::vector<std::unique_ptr<Piece>>& Board::get_pieces() { return this->pieces; }
@@ -53,5 +66,18 @@ bool Board::attempt_promote() {
         id++;
     }
 
+    return false;
+}
+
+bool Board::remove_at(sf::Vector2i position) {
+    auto id = this->pieces.begin();
+    for (const auto& piece : this->get_pieces()) {
+        if (piece->get_pos() == position) {
+            std::cout << "Removing at " << position.x << " " << position.y << std::endl;
+            this->pieces.erase(id);
+            return true;
+        }
+        id++;
+    }
     return false;
 }

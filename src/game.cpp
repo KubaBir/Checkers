@@ -43,13 +43,47 @@ sf::Vector2i game::coords_to_pos(sf::Event event) {
 
 bool game::attempt_move(Board& board, sf::Vector2i origin, sf::Vector2i destination) {
     if (!board.is_occupied(destination) && board.is_occupied(origin)) {
+        if (abs(destination.x - origin.x) == 1 && abs(destination.y - origin.y) == 1)
+            return game::move1(board, origin, destination);
+        if (abs(destination.x - origin.x) == 2 && abs(destination.y - origin.y) == 2)
+            return game::take(board, origin, destination);
+    }
+
+    return false;
+}
+
+bool game::move1(Board& board, sf::Vector2i origin, sf::Vector2i destination) {
+    if (destination.y - origin.y > 0 && board.get_turn() == WHITE) return false;
+    if (destination.y - origin.y < 0 && board.get_turn() == BLACK) return false;
+    for (const auto& piece : board.get_pieces()) {
+        if (piece->get_pos() == origin && piece->get_color() == board.get_turn()) {
+            std::cout << "Moving from " << origin.x << " " << origin.y << " to " << destination.x << " " << destination.y << std::endl;
+            piece->move(destination);
+            board.switch_turn();
+            return true;
+        }
+    }
+    return false;
+}
+
+bool game::take(Board& board, sf::Vector2i origin, sf::Vector2i destination) {
+    sf::Vector2i shift((destination.x - origin.x) / 2, (destination.y - origin.y) / 2);
+    for (const auto& opponent : board.get_pieces()) {
+        if (!(opponent->get_pos() == origin + shift && opponent->get_color() != board.get_turn())) continue;
+
         for (const auto& piece : board.get_pieces()) {
-            if (piece->get_pos() == origin) {
+            if (piece->get_pos() == origin && piece->get_color() == board.get_turn()) {
                 std::cout << "Moving from " << origin.x << " " << origin.y << " to " << destination.x << " " << destination.y << std::endl;
                 piece->move(destination);
+                board.remove_at(origin + shift);
+                board.switch_turn();
+                return true;
             }
         }
     }
+    return false;
+}
 
-    return true;
+void game::update(Board& board) {
+    board.attempt_promote();
 }
