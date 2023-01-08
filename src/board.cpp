@@ -31,6 +31,7 @@ bool Board::is_occupied(sf::Vector2i field) {
     return false;
 }
 
+// Is the field occupied by a piece of *color
 bool Board::is_occupied(sf::Vector2i field, int color) {
     for (const auto& piece : this->get_pieces()) {
         if (piece->get_pos() == field && piece->get_color() == color) {
@@ -48,9 +49,9 @@ void Board::draw(sf::RenderWindow& window) {
         for (int j = 0; j < 8; j++) {
             square.setPosition(sf::Vector2f(i * 100. + MARGIN, j * 100. + MARGIN));
             if ((i + j) % 2 == 0)
-                square.setFillColor(sf::Color(200, 150, 0));
+                square.setFillColor(sf::Color(220, 220, 220));
             else
-                square.setFillColor(sf::Color(80, 41, 0));
+                square.setFillColor(sf::Color(45, 45, 45));
 
             window.draw(square);
         }
@@ -60,6 +61,7 @@ void Board::draw(sf::RenderWindow& window) {
     }
 }
 
+// Check for any available promotions
 bool Board::attempt_promote() {
     auto id = this->pieces.begin();
     for (const auto& piece : this->get_pieces()) {
@@ -81,7 +83,7 @@ bool Board::remove_at(sf::Vector2i position) {
     auto id = this->pieces.begin();
     for (const auto& piece : this->get_pieces()) {
         if (piece->get_pos() == position) {
-            std::cout << "Removing at " << position.x << " " << position.y << std::endl;
+            // std::cout << "Removing at " << position.x << " " << position.y << std::endl;
             this->pieces.erase(id);
             return true;
         }
@@ -91,6 +93,7 @@ bool Board::remove_at(sf::Vector2i position) {
     return false;
 }
 
+// Is the field occupied by a queen
 bool Board::is_queen_at(sf::Vector2i position) {
     for (const auto& piece : this->get_pieces()) {
         if (piece->get_pos() == position) {

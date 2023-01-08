@@ -10,23 +10,17 @@ Pawn::Pawn(int x, int y) {
     this->pos = pos;
     this->is_queen = false;
 }
+
 Pawn::Pawn(int y, int x, int color) {
     sf::Vector2i pos(x, y);
     this->pos = pos;
     this->is_queen = false;
     this->color = color;
 }
-// bool Pawn::move(Board& board, sf::Vector2i origin, sf::Vector2i destination) {
-//     if (!board.is_occupied(destination) && board.is_occupied(origin)) {
-//         if (abs(destination.x - origin.x) == 1 && abs(destination.y - origin.y) == 1)
-//             return game::move1(board, origin, destination);
-//         if (abs(destination.x - origin.x) == 2 && abs(destination.y - origin.y) == 2)
-//             return game::take_between(board, origin, destination);
-//     }
-// }
+
 void Pawn::draw(sf::RenderWindow& window) {
     sf::CircleShape sprite(40);
-    sprite.setOutlineColor(sf::Color(10, 10, 10));
+    sprite.setOutlineColor(sf::Color(100, 100, 100));
     sprite.setOutlineThickness(2.);
     sprite.setOrigin(40., 40.);
     sprite.setPosition(sf::Vector2f(this->get_pos()) * FIELD_SIZE + sf::Vector2f(FIELD_SIZE / 2, FIELD_SIZE / 2) + sf::Vector2f(MARGIN, MARGIN));
@@ -34,6 +28,10 @@ void Pawn::draw(sf::RenderWindow& window) {
         sprite.setFillColor(sf::Color::White);
     else
         sprite.setFillColor(sf::Color::Black);
+    window.draw(sprite);
+    sprite.setRadius(30);
+    sprite.setOrigin(30., 30.);
+    sprite.setPosition(sf::Vector2f(this->get_pos()) * FIELD_SIZE + sf::Vector2f(FIELD_SIZE / 2, FIELD_SIZE / 2) + sf::Vector2f(MARGIN, MARGIN));
     window.draw(sprite);
 }
 
@@ -44,6 +42,14 @@ Queen::Queen(int x, int y) {
     this->pos = pos;
     this->is_queen = true;
 }
+
+Queen::Queen(int y, int x, int color) {
+    sf::Vector2i pos(x, y);
+    this->pos = pos;
+    this->is_queen = true;
+    this->color = color;
+}
+
 Queen::Queen(sf::Vector2i pos) {
     this->pos = pos;
     this->is_queen = true;
@@ -55,26 +61,21 @@ Queen::Queen(sf::Vector2i pos, int color) {
     this->color = color;
 }
 
-Queen::Queen(int y, int x, int color) {
-    sf::Vector2i pos(x, y);
-    this->pos = pos;
-    this->is_queen = true;
-    this->color = color;
-}
-
-// bool Queen::move(Board& board, sf::Vector2i origin, sf::Vector2i destination) {
-//     return false;
-// }
 void Queen::draw(sf::RenderWindow& window) {
     sf::CircleShape sprite(40);
-    sprite.setOutlineColor(sf::Color::Black);
-    sprite.setOutlineThickness(1.);
+    sprite.setOutlineColor(sf::Color(100, 100, 100));
+    sprite.setOutlineThickness(2.);
     sprite.setOrigin(40., 40.);
     sprite.setPosition(sf::Vector2f(this->get_pos()) * FIELD_SIZE + sf::Vector2f(FIELD_SIZE / 2, FIELD_SIZE / 2) + sf::Vector2f(MARGIN, MARGIN));
 
     if (this->color == WHITE)
-        sprite.setFillColor(sf::Color::Red);
+        sprite.setFillColor(sf::Color::White);
     else
-        sprite.setFillColor(sf::Color::Red);
+        sprite.setFillColor(sf::Color::Black);
+    window.draw(sprite);
+    sprite.setRadius(30);
+    sprite.setOrigin(30., 30.);
+    sprite.setFillColor(sf::Color(230, 0, 0, 150));
+    sprite.setPosition(sf::Vector2f(this->get_pos()) * FIELD_SIZE + sf::Vector2f(FIELD_SIZE / 2, FIELD_SIZE / 2) + sf::Vector2f(MARGIN, MARGIN));
     window.draw(sprite);
 }

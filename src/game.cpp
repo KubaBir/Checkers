@@ -14,7 +14,7 @@ Board game::setup() {
     board.add_piece(std::unique_ptr<Piece>(new Pawn(1, 6, BLACK)));
     board.add_piece(std::unique_ptr<Piece>(new Pawn(2, 1, BLACK)));
     board.add_piece(std::unique_ptr<Piece>(new Pawn(2, 3, BLACK)));
-    board.add_piece(std::unique_ptr<Piece>(new Pawn(2, 5, BLACK)));
+    board.add_piece(std::unique_ptr<Piece>(new Queen(2, 5, BLACK)));
     board.add_piece(std::unique_ptr<Piece>(new Pawn(2, 7, BLACK)));
 
     board.add_piece(std::unique_ptr<Piece>(new Pawn(7, 0, WHITE)));
@@ -33,11 +33,11 @@ Board game::setup() {
     return board;
 }
 
+// Convert mouse cooridnates to ingame field
 sf::Vector2i game::coords_to_pos(sf::Event event) {
     sf::Vector2i coords(event.mouseButton.x, event.mouseButton.y);
     int x = coords.x;
     int y = coords.y;
-    // std::cout << x << y << std::endl;
     return sf::Vector2i((x - MARGIN) / FIELD_SIZE, (y - MARGIN) / FIELD_SIZE);
 }
 
@@ -59,7 +59,7 @@ bool game::attempt_move(Board& board, sf::Vector2i origin, sf::Vector2i destinat
 bool game::move_pawn(Board& board, sf::Vector2i origin, sf::Vector2i destination) {
     if (destination.y - origin.y > 0 && board.get_turn() == WHITE) return false;
     if (destination.y - origin.y < 0 && board.get_turn() == BLACK) return false;
-    if (!(abs(destination.x - origin.x) == 1 || abs(destination.y - origin.y) == 1)) return false;
+    if (!(abs(destination.x - origin.x) == 1 && abs(destination.y - origin.y) == 1)) return false;
     for (const auto& piece : board.get_pieces()) {
         if (piece->get_pos() == origin && piece->get_color() == board.get_turn()) {
             std::cout << "Moving from " << origin.x << " " << origin.y << " to " << destination.x << " " << destination.y << std::endl;
@@ -90,6 +90,7 @@ bool game::move_queen(Board& board, sf::Vector2i origin, sf::Vector2i destinatio
     return false;
 }
 
+// Movie a piece with taking, and check for consecutive takes
 bool game::take_between(Board& board, sf::Vector2i origin, sf::Vector2i destination) {
     sf::Vector2i shift((destination.x - origin.x) / abs(destination.x - origin.x), (destination.y - origin.y) / abs(destination.y - origin.y));
     for (const auto& opponent : board.get_pieces()) {
@@ -116,10 +117,12 @@ bool game::take_between(Board& board, sf::Vector2i origin, sf::Vector2i destinat
     return false;
 }
 
+// Board updates performed every move
 void game::update(Board& board) {
     board.attempt_promote();
 }
 
+// Return a vector of forced moves
 std::vector<std::vector<sf::Vector2i>> game::forced_moves(Board& board, int turn) {
     std::vector<std::vector<sf::Vector2i>> moves;
     int opponent;
@@ -162,6 +165,7 @@ std::vector<std::vector<sf::Vector2i>> game::forced_moves(Board& board, int turn
     return moves;
 }
 
+// Check if the move is inbounds and if taking is forced
 bool game::is_legal(Board& board, sf::Vector2i origin, sf::Vector2i destination, bool& forced_take) {
     if (destination.x < 0 || destination.x > 7) return false;
     if (destination.y < 0 || destination.y > 7) return false;

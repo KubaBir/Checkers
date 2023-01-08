@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
 
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
-                window.close();  // exit if window is closed
+                window.close();
 
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
                 origin = game::coords_to_pos(event);
