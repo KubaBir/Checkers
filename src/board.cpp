@@ -31,6 +31,15 @@ bool Board::is_occupied(sf::Vector2i field) {
     return false;
 }
 
+bool Board::is_occupied(sf::Vector2i field, int color) {
+    for (const auto& piece : this->get_pieces()) {
+        if (piece->get_pos() == field && piece->get_color() == color) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void Board::draw(sf::RenderWindow& window) {
     sf::RectangleShape square(sf::Vector2f(99., 99.));
     square.setOutlineColor(sf::Color::Black);
@@ -52,7 +61,6 @@ void Board::draw(sf::RenderWindow& window) {
 }
 
 bool Board::attempt_promote() {
-    // Tu cos nie dziala jak jest 1 albo 2 pionki xD
     auto id = this->pieces.begin();
     for (const auto& piece : this->get_pieces()) {
         if (((piece->get_color() == WHITE && piece->get_pos().y == WHITE_PROMOTE) || (piece->get_color() == BLACK && piece->get_pos().y == BLACK_PROMOTE)) && !piece->get_is_queen()) {
@@ -78,6 +86,19 @@ bool Board::remove_at(sf::Vector2i position) {
             return true;
         }
         id++;
+    }
+
+    return false;
+}
+
+bool Board::is_queen_at(sf::Vector2i position) {
+    for (const auto& piece : this->get_pieces()) {
+        if (piece->get_pos() == position) {
+            if (piece->get_is_queen())
+                return true;
+            else
+                return false;
+        }
     }
     return false;
 }
