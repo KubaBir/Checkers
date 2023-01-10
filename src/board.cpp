@@ -4,6 +4,7 @@ Board::Board(int dim) {
     this->height = dim;
     this->width = dim;
     this->turn = WHITE;
+    this->is_chain_take = false;
 }
 
 void Board::add_piece(std::unique_ptr<Piece> piece) {
@@ -20,6 +21,11 @@ void Board::switch_turn() {
 int Board::get_turn() {
     return this->turn;
 }
+
+bool Board::get_is_chain_take() { return this->is_chain_take; }
+void Board::set_is_chain_take(bool val) { this->is_chain_take = val; }
+sf::Vector2i Board::get_chain_take_field() { return this->chain_take_field; }
+void Board::set_chain_take_field(sf::Vector2i position) { this->chain_take_field = position; }
 
 std::vector<std::unique_ptr<Piece>>& Board::get_pieces() { return this->pieces; }
 

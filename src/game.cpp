@@ -45,6 +45,7 @@ bool game::attempt_move(Board& board, sf::Vector2i origin, sf::Vector2i destinat
     if (!board.is_occupied(origin) || board.is_occupied(destination)) return false;
     bool forced_take = false;
     if (!game::is_legal(board, origin, destination, forced_take)) return false;
+    std::cout << "test";
 
     if (!forced_take) {
         if (board.is_queen_at(origin))
@@ -105,8 +106,13 @@ bool game::take_between(Board& board, sf::Vector2i origin, sf::Vector2i destinat
                 bool turn_switch = true;
                 std::vector<std::vector<sf::Vector2i>> moves = game::forced_moves(board, board.get_turn());
                 for (const auto& move : moves) {
-                    if (move.front() == destination) turn_switch = false;
-                    std::cout << "Chain take from " << move.front().x << move.front().y << std::endl;
+                    if (move.front() == destination) {
+                        turn_switch = false;
+                        std::cout << "Chain take from " << move.front().x << move.front().y << std::endl;
+                        board.set_is_chain_take(true);
+                        board.set_chain_take_field(move.front());
+                        break;
+                    }
                 }
                 if (turn_switch)
                     board.switch_turn();
@@ -137,7 +143,7 @@ std::vector<std::vector<sf::Vector2i>> game::forced_moves(Board& board, int turn
         sf::Vector2i(-1, -1)};
     for (const auto& piece : board.get_pieces()) {
         if (piece->get_color() != board.get_turn()) continue;
-        sf::Vector2i position = piece->get_pos();
+        const sf::Vector2i position = piece->get_pos();
 
         for (int i = 0; i < 4; i++) {
             if (!piece->get_is_queen()) {
@@ -146,18 +152,17 @@ std::vector<std::vector<sf::Vector2i>> game::forced_moves(Board& board, int turn
                 if (destination.y < 0 || destination.y > 7) continue;
                 if (!board.is_occupied(position + shifts[i], opponent)) continue;
                 if (board.is_occupied(destination)) continue;
-                std::cout << "Forced take at: " << (position + shifts[i]).x << (position + shifts[i]).y << std::endl;
                 moves.push_back(std::vector<sf::Vector2i>{sf::Vector2i(position), sf::Vector2i(destination)});
             } else {
-                sf::Vector2i destination = position;
-                while (destination.x < 6 && destination.x > 1 && destination.y < 6 && destination.y > 1) {
-                    destination += shifts[i];
+                sf::Vector2i destination = position + shifts[i];
+                while (destination.x < 7 && destination.x > 0 && destination.y < 7 && destination.y > 0) {
                     if (board.is_occupied(destination, opponent)) {
                         if (board.is_occupied(destination + shifts[i])) break;
-                        std::cout << "Forced take at: " << destination.x << " " << destination.y << std::endl;
                         moves.push_back(std::vector<sf::Vector2i>{sf::Vector2i(position), sf::Vector2i(destination + shifts[i])});
                         break;
-                    }
+                    } else if (board.is_occupied(destination))
+                        break;
+                    destination += shifts[i];
                 }
             }
         }
@@ -170,15 +175,85 @@ bool game::is_legal(Board& board, sf::Vector2i origin, sf::Vector2i destination,
     if (destination.x < 0 || destination.x > 7) return false;
     if (destination.y < 0 || destination.y > 7) return false;
 
-    std::vector<std::vector<sf::Vector2i>> moves = game::forced_moves(board, board.get_turn());
-    if (moves.size() != 0) {
+    std::vector<std::vector<sf::Vector2i>> forced_moves = game::forced_moves(board, board.get_turn());
+    if (forced_moves.size() != 0) {
         forced_take = true;
         std::vector<sf::Vector2i> attempted_move{origin, destination};
         bool correct = false;
-        for (const auto& move : moves) {
-            if (move == attempted_move) correct = true;
+        for (const auto& move : forced_moves) {
+            if (move == attempted_move) {
+                correct = true;
+            } else
+                std::cout << "Forced take from: " << move[0].x << " " << move[0].y << std::endl;
         }
         if (!correct) return false;
     }
+
+    if (board.get_is_chain_take()) {
+        if (origin != board.get_chain_take_field())
+            return false;
+        board.set_is_chain_take(false);
+    }
+
     return true;
+}
+
+// Returns a list of all legal moves (only use if taking is not forced)
+std::vector<std::vector<sf::Vector2i>> game::legal_moves(Board& board, int turn) {
+    std::vector<std::vector<sf::Vector2i>> moves;
+    sf::Vector2i all_shifts[4] = {
+        sf::Vector2i(1, 1),
+        sf::Vector2i(1, -1),
+        sf::Vector2i(-1, 1),
+        sf::Vector2i(-1, -1)};
+    for (const auto& piece : board.get_pieces()) {
+        if (piece->get_color() != board.get_turn()) continue;
+        sf::Vector2i position = piece->get_pos();
+
+        if (piece->get_is_queen()) {
+            for (int i = 0; i < 4; i++) {
+                sf::Vector2i destination = position + all_shifts[i];
+                while (destination.x <= 7 && destination.x >= 0 && destination.y <= 7 && destination.y >= 0) {
+                    if (!board.is_occupied(destination))
+                        moves.push_back(std::vector<sf::Vector2i>{sf::Vector2i(position), sf::Vector2i(destination)});
+                    else
+                        break;
+                    destination += all_shifts[i];
+                }
+            }
+            continue;
+        }
+        sf::Vector2i shifts[2];
+        if (piece->get_color() == WHITE) {
+            shifts[0] = sf::Vector2i(1, -1);
+            shifts[1] = sf::Vector2i(-1, -1);
+        } else {
+            shifts[0] = sf::Vector2i(1, 1);
+            shifts[1] = sf::Vector2i(-1, 1);
+        }
+        for (int i = 0; i < 2; i++) {
+            sf::Vector2i destination = position + shifts[i];
+            if (destination.x < 0 || destination.x > 7) continue;
+            if (destination.y < 0 || destination.y > 7) continue;
+            if (!board.is_occupied(destination))
+                moves.push_back(std::vector<sf::Vector2i>{sf::Vector2i(position), sf::Vector2i(destination)});
+        }
+    }
+    return moves;
+}
+
+Board game::new_game(sf::RenderWindow& window) {
+    std::cout << "Game over. Press any keyboard key to continue" << std::endl;
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+
+            if (event.type == sf::Event::KeyPressed) {
+                Board board = game::setup();
+                return board;
+            }
+        }
+    }
 }

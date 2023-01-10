@@ -75,7 +75,9 @@ void Queen::draw(sf::RenderWindow& window) {
     window.draw(sprite);
     sprite.setRadius(30);
     sprite.setOrigin(30., 30.);
-    sprite.setFillColor(sf::Color(230, 0, 0, 150));
+    sprite.setFillColor(sf::Color::Black);
     sprite.setPosition(sf::Vector2f(this->get_pos()) * FIELD_SIZE + sf::Vector2f(FIELD_SIZE / 2, FIELD_SIZE / 2) + sf::Vector2f(MARGIN, MARGIN));
+    window.draw(sprite);
+    sprite.setFillColor(sf::Color(230, 0, 0, 150));
     window.draw(sprite);
 }
