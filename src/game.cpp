@@ -14,7 +14,7 @@ Board game::setup() {
     board.add_piece(std::unique_ptr<Piece>(new Pawn(1, 6, BLACK)));
     board.add_piece(std::unique_ptr<Piece>(new Pawn(2, 1, BLACK)));
     board.add_piece(std::unique_ptr<Piece>(new Pawn(2, 3, BLACK)));
-    board.add_piece(std::unique_ptr<Piece>(new Queen(2, 5, BLACK)));
+    board.add_piece(std::unique_ptr<Piece>(new Pawn(2, 5, BLACK)));
     board.add_piece(std::unique_ptr<Piece>(new Pawn(2, 7, BLACK)));
 
     board.add_piece(std::unique_ptr<Piece>(new Pawn(7, 0, WHITE)));
@@ -27,7 +27,7 @@ Board game::setup() {
     board.add_piece(std::unique_ptr<Piece>(new Pawn(6, 7, WHITE)));
     board.add_piece(std::unique_ptr<Piece>(new Pawn(5, 0, WHITE)));
     board.add_piece(std::unique_ptr<Piece>(new Pawn(5, 2, WHITE)));
-    board.add_piece(std::unique_ptr<Piece>(new Queen(5, 4, WHITE)));
+    board.add_piece(std::unique_ptr<Piece>(new Pawn(5, 4, WHITE)));
     board.add_piece(std::unique_ptr<Piece>(new Pawn(5, 6, WHITE)));
 
     return board;
@@ -45,7 +45,6 @@ bool game::attempt_move(Board& board, sf::Vector2i origin, sf::Vector2i destinat
     if (!board.is_occupied(origin) || board.is_occupied(destination)) return false;
     bool forced_take = false;
     if (!game::is_legal(board, origin, destination, forced_take)) return false;
-    std::cout << "test";
 
     if (!forced_take) {
         if (board.is_queen_at(origin))
@@ -189,6 +188,7 @@ bool game::is_legal(Board& board, sf::Vector2i origin, sf::Vector2i destination,
         if (!correct) return false;
     }
 
+    // If last move forced chain take, account for that
     if (board.get_is_chain_take()) {
         if (origin != board.get_chain_take_field())
             return false;
@@ -244,6 +244,9 @@ std::vector<std::vector<sf::Vector2i>> game::legal_moves(Board& board, int turn)
 
 Board game::new_game(sf::RenderWindow& window) {
     std::cout << "Game over. Press any keyboard key to continue" << std::endl;
+    window.clear();
+    window.display();
+    Board board = game::setup();
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -251,9 +254,9 @@ Board game::new_game(sf::RenderWindow& window) {
                 window.close();
 
             if (event.type == sf::Event::KeyPressed) {
-                Board board = game::setup();
                 return board;
             }
         }
     }
+    return board;
 }

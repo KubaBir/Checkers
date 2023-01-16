@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
                 if (game::attempt_move(board, origin, destination)) {
                     cout << "----------" << endl;
 
+                    // Check if game has ended
                     if (game::forced_moves(board, board.get_turn()).size() == 0) {
                         std::vector<std::vector<sf::Vector2i>> moves = game::legal_moves(board, board.get_turn());
                         if (moves.size() == 0) game_end = true;
@@ -42,7 +43,7 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        window.clear(sf::Color::Cyan);
+        window.clear(sf::Color::White);
         board.draw(window);
         window.display();
         if (game_end) {

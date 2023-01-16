@@ -1,6 +1,14 @@
 #ifndef GAME
 #define GAME
 
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
+
+#include <cstdlib>
+
 #include "board.h"
 
 namespace game {

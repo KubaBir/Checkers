@@ -5,7 +5,7 @@
 #define WHITE 1
 #define BLACK 0
 #define BOARD_SIZE 820
-#define SIDESCREAN_SIZE 200
+#define SIDESCREAN_SIZE 0
 #define MARGIN 10.f
 #define FIELD_SIZE 100.f
 
